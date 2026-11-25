@@ -1,7 +1,7 @@
-// STGN — күнделікті «ояту»: Supabase тегін жобалары 7 күн белсенділіксіз тоқтап қалмауы үшін.
+// RSLC — күнделікті «ояту»: Supabase тегін жобалары 7 күн белсенділіксіз тоқтап қалмауы үшін.
 // Vercel Cron күнде шақырады (vercel.json → crons). Деректерді оқымайды, тек жеңіл сұраныс жібереді.
 const TARGETS = [
-  { name: "ybraiym-library + STGN", url: "https://yzfnxfkjncmeuejzjsbp.supabase.co/rest/v1/rpc/stgn_ping", key: "sb_publishable_PjCCzbNBoaTr2CTo7eqFsA__2Bn3O-9", schema: "stgn" },
+  { name: "ybraiym-library + RSLC", url: "https://yzfnxfkjncmeuejzjsbp.supabase.co/rest/v1/rpc/stgn_ping", key: "sb_publishable_PjCCzbNBoaTr2CTo7eqFsA__2Bn3O-9", schema: "stgn" },
   { name: "geoatlas (ҰБТ)", url: "https://dbwttnavvzwlwhnmnmyp.supabase.co/rest/v1/rpc/keepalive_ping", key: "sb_publishable_c8mkbv7_b6HSenJfhzeQXQ_lAtgDllM" }
 ];
 
