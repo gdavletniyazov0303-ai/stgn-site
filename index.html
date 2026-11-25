@@ -1318,7 +1318,7 @@ document.addEventListener('submit',async e=>{
 });
 /* ---------- Supabase mode ---------- */
 const CFG=window.STGN_CONFIG||{};
-const TBL=CFG.table||'stgn_docs',BKT=CFG.bucket||'stgn-files';
+const TBL=CFG.table||'stgn_docs',BKT=CFG.bucket||'stgn-files',SCH=CFG.schema||'public';
 const SURL={};let surlQ=new Set(),surlT=0;
 function supaSigned(){clearTimeout(surlT);surlT=setTimeout(async()=>{const ids=[...surlQ];surlQ=new Set();if(!ids.length||!S.sb)return;try{const {data}=await S.sb.storage.from(BKT).createSignedUrls(ids,3600);for(const r of data||[])if(r.signedUrl)SURL[r.path]={u:r.signedUrl,t:Date.now()+3300e3};render()}catch(e){}},30)}
 function supaDB(sb){
@@ -1328,12 +1328,13 @@ function supaDB(sb){
  const sd=p=>({id:p.split('/').pop(),exists:!!store[p],data:()=>store[p],metadata:{fromCache:!ready,hasPendingWrites:false}});
  const cmp=(x,op,v)=>op==='=='?x===v:op==='!='?x!==v:op==='<'?x<v:op==='<='?x<=v:op==='>'?x>v:op==='>='?x>=v:op==='in'?(v||[]).includes(x):op==='not-in'?!(v||[]).includes(x):op==='array-contains'?(x||[]).includes(v):true;
  const err=e=>({code:/42501|row-level security|permission|бере алады|өзгерте алады|Super Admin/i.test((e?.code||'')+' '+(e?.message||''))?'invalid_argument':/fetch|network|Failed/i.test(e?.message||'')?'unavailable':'invalid_argument',message:e?.message||String(e)});
- async function loadAll(){const all={};for(let i=0;;i+=1000){const {data,error}=await sb.from(TBL).select('path,data').order('path').range(i,i+999);if(error)throw error;for(const r of data)all[r.path]=r.data;if(data.length<1000)break}for(const k of Object.keys(store))if(!(k in all))delete store[k];Object.assign(store,all);ready=true;S.offline=false;waiters.splice(0).forEach(f=>f());fire()}
- let ch=null,retry=0;
+ async function loadAll(){const all={};for(let i=0;;i+=1000){const {data,error}=await sb.from(TBL).select('path,data').order('path').range(i,i+999);if(error){S.lastErr=error;throw error}for(const r of data)all[r.path]=r.data;if(data.length<1000)break}for(const k of Object.keys(store))if(!(k in all))delete store[k];Object.assign(store,all);ready=true;S.offline=false;waiters.splice(0).forEach(f=>f());fire()}
+ let ch=null,retry=0,gen=0,rt=0;
  function connect(){
-  if(ch)sb.removeChannel(ch);
-  ch=sb.channel('stgn-docs').on('postgres_changes',{event:'*',schema:'public',table:TBL},p=>{if(p.eventType==='DELETE'){const k=p.old?.path;if(k){delete store[k];fire()}}else if(p.new?.path){store[p.new.path]=p.new.data;fire()}})
-  .subscribe(st=>{if(st==='SUBSCRIBED'){retry=0;loadAll().catch(()=>{S.offline=true;render()})}else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'||st==='CLOSED'){S.offline=true;render();setTimeout(connect,Math.min(30000,1000*2**(retry++)))}});
+  const my=++gen;clearTimeout(rt);
+  if(ch){const old=ch;ch=null;sb.removeChannel(old)}
+  ch=sb.channel('stgn-docs-'+my).on('postgres_changes',{event:'*',schema:SCH,table:TBL},p=>{if(my!==gen)return;if(p.eventType==='DELETE'){const k=p.old?.path;if(k){delete store[k];fire()}}else if(p.new?.path){store[p.new.path]=p.new.data;fire()}})
+  .subscribe(st=>{if(my!==gen)return;if(st==='SUBSCRIBED'){retry=0;loadAll().catch(()=>{S.offline=true;render()})}else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'||st==='CLOSED'){S.offline=true;render();clearTimeout(rt);rt=setTimeout(connect,Math.min(60000,2000*2**(retry++)))}});
  }
  let hiddenAt=0;document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>60000){loadAll().catch(()=>{});hiddenAt=0}});
  window.addEventListener('online',()=>{loadAll().catch(()=>{});connect()});
@@ -1362,7 +1363,7 @@ async function supaBoot(){
  if(CFG.vendor!==false){LIBS.xlsx='vendor/xlsx.full.min.js';LIBS.jspdf='vendor/jspdf.umd.min.js';LIBS.h2c='vendor/html2canvas.min.js'}
  LIBS.supabase=CFG.supabaseJs||(CFG.vendor===false?'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js':'vendor/supabase.js');
  try{if(!window.supabase?.createClient)await lib('supabase')}catch(e){S.stage='msg';S.msg='Supabase кітапханасы жүктелмеді. vendor/supabase.js файлын тексеріңіз.';render();return}
- const sb=window.supabase.createClient(CFG.supabaseUrl,CFG.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},realtime:{params:{eventsPerSecond:20}}});
+ const sb=window.supabase.createClient(CFG.supabaseUrl,CFG.supabaseAnonKey,{db:{schema:SCH},auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},realtime:{params:{eventsPerSecond:20}}});
  S.sb=sb;
  sb.auth.onAuthStateChange((ev,session)=>{if(ev==='PASSWORD_RECOVERY'){S.stage='sreset';render()}else if(ev==='SIGNED_OUT'){location.hash='';location.reload()}else if(ev==='SIGNED_IN'&&S.stage==='slogin'&&session)supaStart(session)});
  const {data:{session}}=await sb.auth.getSession();
@@ -1376,7 +1377,7 @@ function supaStart(session){
  S.db=supaDB(S.sb);S.assets=supaAssets;S.dl=localDl;
  S.sample=CFG.ai?async(prompt,o={})=>{const {data,error}=await S.sb.functions.invoke('stgn-ai',{body:{prompt}});if(error||!data?.text)throw {code:'upstream_error',message:error?.message||data?.error||'AI жауап бермеді'};o.onText?.({text:data.text,delta:data.text});return {text:data.text,truncated:!!data.truncated}}:null;
  S.stage='boot';render();
- const timer=setTimeout(()=>{if(S.stage==='boot'){S.offline=true;S.stage='msg';S.msg='Серверге қосылу мүмкін болмады. Интернетті тексеріп, бетті жаңартыңыз.';render()}},15000);
+ const timer=setTimeout(()=>{if(S.stage==='boot'){S.offline=true;S.stage='msg';const e=S.lastErr||{};S.msg=(e.code==='PGRST002'||e.code==='PGRST106'||/schema/i.test(e.message||''))?'Сервер дерекқорды көре алмай тұр: Supabase → Integrations → Data API бөлімінде Data API қосулы және Exposed schemas тізімінде «'+SCH+'» схемасы бар екенін тексеріңіз.':'Серверге қосылу мүмкін болмады. Интернетті тексеріп, бетті жаңартыңыз.'+(e.message?' ('+e.message+')':'');render()}},15000);
  S.db.collection('members').onSnapshot(async snap=>{clearTimeout(timer);S.members=snap.docs.map(d=>({...d.data(),id:d.id}));S.loaded.members=true;
   if(!S.members.some(m=>m.uid===S.uid)&&!S.bootTried){S.bootTried=true;try{const {data}=await S.sb.rpc('stgn_bootstrap',{p_name:S.profile.name});if(data){await S.db.reload();return}}catch(e){}}
   await onMembers();render()});
