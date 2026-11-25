@@ -206,7 +206,7 @@ button.card[disabled]{opacity:.55;cursor:not-allowed}
 @media(max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.rail{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px 12px;gap:8px}.nav{flex-direction:row;overflow-x:auto;width:100%;order:3}.nav a{white-space:nowrap}.later,.who{display:none}.top{position:static}}
 @media(max-width:700px){.g2,.g3,.grid2{grid-template-columns:minmax(0,1fr)}.kv{grid-template-columns:minmax(0,1fr)}.kv dt{margin-top:6px}.hbar{grid-template-columns:minmax(0,7em) minmax(0,1fr) 2.6em}.bar input[type=search]{min-width:0;width:100%}.bar select{max-width:100%;flex:1 1 140px}}
 @media(max-width:600px){.tbl{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid var(--line)}.stack td{display:flex;justify-content:space-between;gap:12px;border:0;padding:3px 4px;text-align:right}.stack td::before{content:attr(data-l);color:var(--mut);text-align:left}.stack td:empty{display:none}}
-.pwwrap{position:relative;display:block}.pwwrap input{padding-right:44px!important}.pweye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;background:transparent;color:var(--mut);cursor:pointer;display:grid;place-items:center;border-radius:6px;padding:0}.pweye:hover,.pweye:focus-visible{color:var(--ink);background:var(--line)}.pweye svg{width:20px;height:20px}
+details.panel>summary{cursor:pointer;list-style-position:inside}.pwwrap{position:relative;display:block}.pwwrap input{padding-right:44px!important}.pweye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;background:transparent;color:var(--mut);cursor:pointer;display:grid;place-items:center;border-radius:6px;padding:0}.pweye:hover,.pweye:focus-visible{color:var(--ink);background:var(--line)}.pweye svg{width:20px;height:20px}
 </style>
 <script src="config.js"></script>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;const h=c.closest('table').rows[0].cells[i];c.dataset.l=h?h.textContent:''}}).observe(document,{childList:true,subtree:true})</script>
@@ -728,12 +728,13 @@ VIEWS.school=id=>{
  <div class="panel"><h3>Мектеп бойынша есептер</h3><div class="list">${reps.map(r=>`<div class="li" data-act="rep" data-id="${esc(r.id)}"><div class="tm">${esc(fmtS(r.date))}</div><div><div class="ttl">${esc(r.title)}</div><div class="meta">${esc(mn(r.authorId))}</div></div><div>${chip(r.status)}</div></div>`).join('')||'<p class="note">Есеп жоқ.</p>'}</div></div></div>`;
 };
 VIEWS.team=()=>{
- const wk=range('week');const ms=S.members.slice().sort(by('name'));
+ const wk=range('week');const all=S.members.slice().sort(by('name'));const ms=all.filter(m=>m.active!==false),gone=all.filter(m=>m.active===false);
  const load=m=>S.events.filter(e=>e.teacherId===m.id&&inR(e.date,wk)&&live(e)).length+S.tasks.filter(t=>(t.assignees||[]).includes(m.id)&&openTask(t)).length;
  const mx=Math.max(1,...ms.map(load));
  return `${hd('Команда',`${ms.length} қызметкер · жүктеме = осы аптадағы іс-шаралар + ашық тапсырмалар`,`${canManage()?'<button class="btn" data-act="newMember">+ Қызметкер</button>':''}<button class="btn ghost" data-act="exportTeam">CSV / Excel</button>`)}
  ${isAdmin()&&S.requests.length?`<div class="panel tint"><h3>Жүйеге қосылу сұраныстары <small>${S.requests.length}</small></h3>${S.requests.map(r=>`<div class="li" style="cursor:default"><div class="tm"><span class="av">${esc(ini(r.name))}</span></div><div><div class="ttl">${esc(r.name)}</div><div class="meta">${esc([r.position,r.school,r.note].filter(Boolean).join(' · '))} · ${esc(fmtTs(r.at))}</div></div><div class="bar"><button class="btn sm" data-act="approveReq" data-id="${esc(r.id)}">Бекіту</button><button class="btn ghost sm" data-act="rejectReq" data-id="${esc(r.id)}">Қабылдамау</button></div></div>`).join('')}</div>`:''}
  ${ms.length?`<div class="panel scroll"><table class="tbl stack"><thead><tr><th>Аты-жөні</th><th>Рөлі</th><th>Қызметі</th><th>Жұмыс орны</th><th>Сапар күндері</th><th>Жүктеме</th><th>Аккаунт</th></tr></thead><tbody>${ms.map(m=>`<tr class="click" data-act="go" data-id="member-${esc(m.id)}"><td><b>${esc(m.name)}</b>${m.active===false?' <span class="chip off">белсенді емес</span>':''}</td><td>${esc(ROLES[m.role]||m.role)}</td><td>${esc(m.position||'—')}</td><td>${esc(sn(m.homeSchoolId))}</td><td>${esc((m.visitDays||[]).map(i=>WD[i]).join(', ')||'—')}</td><td><div class="hbar" style="grid-template-columns:minmax(0,1fr) 2em;padding:0"><span class="t"><i class="${load(m)/mx>.8?'c':''}" style="width:${load(m)/mx*100}%"></i></span><span class="n">${load(m)}</span></div></td><td>${m.uid?'<span class="chip ok">байланған</span>':'<span class="chip">жоқ</span>'}</td></tr>`).join('')}</tbody></table></div>`:''}
+ ${gone.length?`<details class="panel"><summary><b>Командадан шығарылғандар</b> <small>${gone.length}</small></summary><div class="list" style="margin-top:8px">${gone.map(m=>`<div class="li" style="cursor:default"><div class="tm"><span class="av">${esc(ini(m.name))}</span></div><div><div class="ttl"><a href="#member-${esc(m.id)}">${esc(m.name)}</a></div><div class="meta">${esc([ROLES[m.role]||m.role,m.removedAt?'шығарылды: '+fmtTs(m.removedAt):'',m.removedReason].filter(Boolean).join(' · '))}</div></div><div class="bar">${canManage()&&(isAdmin()||m.role!=='superadmin')?`<button class="btn ghost sm" data-act="restoreMember" data-id="${esc(m.id)}">Қайтару</button>`:''}</div></div>`).join('')}</div></details>`:''}
  <p class="note">${S.supa?'Жаңа қызметкер сайтқа кіріп, «Аккаунт ашу» арқылы e-mail мен құпиясөз жасайды да, сұраныс жібереді. Сіз сұранысты осы жерде бекітіп, оны тізімдегі профильмен байланыстырасыз.':S.local?'Автономды режим: қызметкерге логин мен құпиясөзді оның профилінде («Профильді өңдеу») беріңіз.':'Жаңа адам RSLC сілтемесін ашып, claude.ai аккаунтымен кіреді де, сұраныс жібереді. Super Admin сұранысты бекітіп, оны тізімдегі қызметкермен байланыстырады.'}</p>`;
 };
 VIEWS.member=id=>{
@@ -741,7 +742,8 @@ VIEWS.member=id=>{
  const wk=range('week');const ev=S.events.filter(e=>e.teacherId===id);const week=ev.filter(e=>inR(e.date,wk)).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
  const ts=S.tasks.filter(t=>(t.assignees||[]).includes(id));const reps=S.reports.filter(r=>r.authorId===id&&r.status!=='Draft');const mats=S.materials.filter(x=>x.authorId===id);const prj=S.projects.filter(p=>p.pmId===id||(p.team||[]).includes(id));const pdl=S.pd.filter(x=>x.memberId===id).sort(by('date',-1));
  const visits=ev.filter(e=>e.status==='Completed'&&e.schoolId!==m.homeSchoolId).length;
- return `${hd(m.name,`${esc(ROLES[m.role]||'')} · ${esc(m.position||'')} · ${esc(sn(m.homeSchoolId))}`,canManage()?`<button class="btn ghost" data-act="editMember" data-id="${esc(id)}">Профильді өңдеу</button><button class="btn" data-act="newTask" data-id="" data-assignee="${esc(id)}">+ Тапсырма беру</button>`:'')}
+ return `${hd(m.name,`${esc(ROLES[m.role]||'')} · ${esc(m.position||'')} · ${esc(sn(m.homeSchoolId))}`,canManage()?(m.active===false?`${canManage()&&(isAdmin()||m.role!=='superadmin')?`<button class="btn" data-act="restoreMember" data-id="${esc(id)}">Командаға қайтару</button>`:''}${isAdmin()?`<button class="btn ghost" data-act="purgeMember" data-id="${esc(id)}">Біржола өшіру</button>`:''}`:`<button class="btn ghost" data-act="editMember" data-id="${esc(id)}">Профильді өңдеу</button><button class="btn" data-act="newTask" data-id="" data-assignee="${esc(id)}">+ Тапсырма беру</button>${canRemove(m)?`<button class="btn ghost" data-act="removeMember" data-id="${esc(id)}">Командадан шығару</button>`:''}`):'')}
+ ${m.active===false?`<div class="panel tint"><b>Бұл қызметкер командадан шығарылған.</b> <span class="small">${esc([m.removedAt?fmtTs(m.removedAt):'',m.removedBy?'шығарған: '+mn(m.removedBy):'',m.removedReason?'себебі: '+m.removedReason:''].filter(Boolean).join(' · '))}</span><p class="note" style="margin:6px 0 0">Жүйеге кіре алмайды. Бұрынғы жұмыстарының тарихы төменде сақталған.</p></div>`:''}
  <div class="metrics">${met(ts.filter(t=>t.status==='Completed').length,'Орындалған тапсырмалар','tasks:Completed')}${met(prj.filter(p=>p.status==='Completed').length,'Аяқталған жобалар','projects:Completed')}${met(ev.filter(e=>e.status==='Completed').length,'Өткізілген сабақтар','schedule:Completed')}${met(visits,'Басқа мектептерге сапарлар','schedule:Completed')}${met(mats.length,'Әзірленген материалдар','materials')}${met(reps.length,'Тапсырылған есептер','reports:all')}</div>
  <div class="grid g2"><div class="panel"><h3>Профиль</h3><dl class="kv"><dt>Мамандығы</dt><dd>${esc(m.specialty||'—')}</dd><dt>Жұмыс орны</dt><dd>${esc(sn(m.homeSchoolId))}</dd><dt>Басқа мектептерге бару күндері</dt><dd>${esc((m.visitDays||[]).map(i=>WDF[i]).join(', ')||'Белгіленбеген')}</dd><dt>Жобалары</dt><dd>${esc(prj.map(p=>p.name).join(', ')||'—')}</dd><dt>Байланыс</dt><dd>${(()=>{const c=S.contacts.find(x=>x.id===id);return esc([c?.phone,c?.email].filter(Boolean).join(' · ')||'—')})()}</dd></dl></div>
  <div class="panel"><h3>Осы аптаның кестесі</h3><div class="list">${week.map(evLine).join('')||'<p class="note">Жоспар жоқ.</p>'}</div></div>
@@ -1178,6 +1180,41 @@ async function approveReq(id){
  const data={...base,name:v.link==='new'?v.name:base.name||v.name,role:v.link==='new'?v.role:base.role||v.role,position:v.position||base.position||'',specialty:v.specialty||base.specialty||'',homeSchoolId:v.homeSchoolId||base.homeSchoolId||'',visitDays:v.link==='new'?v.visitDays.map(Number):(base.visitDays||[]),active:true,uid:r.id};delete data.phone;delete data.email;
  if(await put('members',mid,data)){if(v.phone||v.email)await put('mgmt/data/contacts',mid,{phone:v.phone,email:v.email});await del('requests',id);toast('Бекітілді');log('Аккаунт бекітілді',data.name)}
 }
+const canRemove=m=>!!m&&canManage()&&m.id!==myId()&&(!m.uid||m.uid!==S.uid)&&(isAdmin()||m.role!=='superadmin');
+async function removeMember(id){
+ const m=M(id);if(!canRemove(m)||m.active===false)return;
+ const tasks=S.tasks.filter(t=>openTask(t)&&(t.assignees||[]).includes(id));
+ const evs=S.events.filter(e=>e.teacherId===id&&e.date&&e.date>=today()&&live(e));
+ const prjs=S.projects.filter(p=>!['Completed','Cancelled'].includes(p.status)&&(p.pmId===id||(p.team||[]).includes(id)));
+ const lead=prjs.filter(p=>p.pmId===id);
+ const fields=[{k:'reason',l:'Себебі (міндетті емес)',t:'textarea',rows:2,full:1}];
+ if(tasks.length||lead.length)fields.push({k:'to',l:[tasks.length?`${tasks.length} ашық тапсырмасын`:'',lead.length?`${lead.length} жобаның жетекшілігін`:''].filter(Boolean).join(' және ')+' кімге беру',t:'select',o:memOpts('— ешкімге бермеу',x=>x.id!==id),full:1});
+ if(evs.length)fields.push({k:'ev',l:`Кестедегі алдағы ${evs.length} іс-шарасы`,t:'select',o:[['keep','Өзгеріссіз қалдыру (кейін өзім ауыстырамын)'],['cancel','Барлығын тоқтату (Cancelled)']],full:1});
+ const v=await form('Командадан шығару: '+m.name,fields,{reason:'',to:'',ev:'keep'});if(!v)return;
+ const sum=[`${m.name} жүйеге кіре алмайды және тапсырма, кесте тізімдерінде көрінбейді.`,tasks.length?(v.to?`${tasks.length} тапсырмасы ${mn(v.to)} атына беріледі.`:`${tasks.length} тапсырмадан аты алынады.`):'',lead.length?(v.to?`${lead.length} жобаның жетекшісі ${mn(v.to)} болады.`:`${lead.length} жоба жетекшісіз қалады.`):'',evs.length?(v.ev==='cancel'?`Алдағы ${evs.length} іс-шарасы тоқтатылады.`:`Алдағы ${evs.length} іс-шарасы кестеде қалады.`):'','Бұрынғы есептері, тарихы мен материалдары сақталады. Кейін «Командаға қайтару» арқылы қайта қосуға болады.'].filter(Boolean).join(' ');
+ if(!await ask('Растаңыз',sum,'Командадан шығару',1))return;
+ if(!await upd('members',id,{active:false,removedAt:now(),removedBy:myId()||'',removedReason:v.reason||''}))return;
+ let nt=0,np=0,ne=0;
+ for(const t of tasks){const a=(t.assignees||[]).filter(x=>x!==id);if(v.to&&!a.includes(v.to))a.push(v.to);if(await upd('tasks',t.id,{assignees:a}))nt++}
+ for(const pr of prjs){const d={team:(pr.team||[]).filter(x=>x!==id)};if(pr.pmId===id){d.pmId=v.to||'';if(v.to&&!d.team.includes(v.to))d.team.push(v.to)}if(await upd('projects',pr.id,d))np++}
+ if(v.ev==='cancel')for(const e of evs)if(await upd('events',e.id,{status:'Cancelled'}))ne++;
+ if(v.to&&(nt||lead.length))await notify(v.to,`${m.name} командадан шығарылды. Сізге берілді: ${[nt?nt+' тапсырма':'',lead.length?lead.length+' жоба жетекшілігі':''].filter(Boolean).join(', ')}.`,'tasks');
+ log('Командадан шығарылды',m.name+(v.reason?' — '+v.reason:''));
+ toast(`${m.name} командадан шығарылды`+(nt?` · ${nt} тапсырма`:'')+(ne?` · ${ne} іс-шара тоқтатылды`:''));
+}
+async function restoreMember(id){
+ const m=M(id);if(!m||m.active!==false||!canManage()||(m.role==='superadmin'&&!isAdmin()))return;
+ if(!await ask('Командаға қайтару',`${m.name} қайтадан жүйеге кіре алады, рөлі «${ROLES[m.role]||m.role}» болып қалады. Рөлін өзгерту керек болса, кейін «Профильді өңдеу» арқылы ауыстырыңыз.`,'Қайтару'))return;
+ if(await upd('members',id,{active:true,removedAt:null,removedBy:null,removedReason:null})){await notify(id,'Сіз командаға қайта қосылдыңыз.','');log('Командаға қайтарылды',m.name);toast(m.name+' командаға қайтарылды')}
+}
+async function purgeMember(id){
+ const m=M(id);if(!m||!isAdmin()||m.active!==false)return;
+ if(!await ask('Біржола өшіру',`${m.name} профилі біржола өшіріледі. Бұрынғы тапсырмаларда, есептерде және кестеде оның аты «—» болып көрінеді. Бұл әрекетті қайтару мүмкін емес. Әдетте командадан шығару жеткілікті.`,'Біржола өшіру',1))return;
+ if(!await del('members',id))return;
+ if(S.contacts.some(c=>c.id===id))await del('mgmt/data/contacts',id);
+ if(S.local){try{const a=await S.db.collection('localAccounts').where('memberId','==',id).get();for(const d of a.docs)await del('localAccounts',d.id)}catch(e){}}
+ log('Профиль біржола өшірілді',m.name);toast('Профиль өшірілді');location.hash='#team';
+}
 async function pdForm(memberId){
  const v=await form('Кәсіби даму жазбасы',[{k:'title',l:'Атауы',req:1,full:1},{k:'kind',l:'Түрі',t:'select',o:opt(['Курс','Семинар','Тренинг','Конференция','Сертификат','Өзін-өзі дамыту'])},{k:'date',l:'Күні',t:'date',req:1},{k:'hours',l:'Сағат саны',t:'number',min:0},{k:'note',l:'Қысқаша',t:'textarea',rows:2}],{date:today(),kind:'Курс'});
  if(!v)return;if(await put('pd',nid(),{...v,memberId,createdAt:now()})){toast('Жазба қосылды');log('Кәсіби даму жазбасы',v.title)}
@@ -1243,7 +1280,7 @@ const ACT={
  newMat:()=>matForm(),editMat:id=>matForm(S.materials.find(m=>m.id===id)),
  delMat:async id=>{const m=S.materials.find(x=>x.id===id);if(!(await ask('Материалды өшіру',`«${m?.title}» және оның файлы біржола өшіріледі.`,'Өшіру',1)))return;if(m?.file&&S.assets){try{await S.assets.delete(m.file.assetId)}catch(e){}}if(await del('materials',id)){toast('Өшірілді');log('Материал өшірілді',m?.title)}},
  newSchool:()=>schoolForm(),editSchool:id=>schoolForm(Sc(id)),
- newMember:()=>memberForm(),editMember:id=>memberForm(M(id)),
+ newMember:()=>memberForm(),editMember:id=>memberForm(M(id)),removeMember:id=>removeMember(id),restoreMember:id=>restoreMember(id),purgeMember:id=>purgeMember(id),
  approveReq:id=>approveReq(id),
  rejectReq:async id=>{if(await ask('Сұранысты қабылдамау','Сұраныс өшіріледі.','Қабылдамау',1))await del('requests',id)},
  exportTeam:()=>exportRows(`rslc-komanda-${today()}.csv`,['Аты-жөні','Рөлі','Қызметі','Мамандығы','Жұмыс орны','Бару күндері','Телефон','E-mail','Белсенді'],S.members.map(m=>[m.name,ROLES[m.role],m.position,m.specialty,sn(m.homeSchoolId),(m.visitDays||[]).map(i=>WDF[i]).join(', '),S.contacts.find(c=>c.id===m.id)?.phone||'',S.contacts.find(c=>c.id===m.id)?.email||'',m.active===false?'жоқ':'иә'])),
