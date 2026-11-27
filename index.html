@@ -94,13 +94,13 @@ main{min-width:0;display:flex;flex-direction:column}
 .met .v{font:800 clamp(26px,3vw,34px)/1 "Inter Tight",sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .met .l{font-size:13px;color:var(--mut);margin-top:6px;line-height:1.3}
 .met.bad .v{color:var(--coral)}
-.hbar{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 3em;gap:8px;align-items:center;font-size:13.5px;padding:4px 0}
+.hbar{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr) 3em;gap:8px;align-items:center;font-size:13.5px;padding:4px 0}
 .hbar .t{height:12px;background:var(--panel);border-radius:3px;overflow:hidden}
 .hbar .t i{display:block;height:100%;background:var(--acc)}
 .hbar .t i.c{background:var(--coral)}
 .hbar .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .hbw .hbar{grid-template-columns:minmax(0,13em) minmax(0,1fr) 3em}
-.hbar .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbar .nm{white-space:normal;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .cols{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;align-items:end;height:170px;padding-top:18px}
 .cols .c{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:4px;text-align:center;font-size:12px;color:var(--mut)}
 .cols .stk{display:flex;flex-direction:column-reverse;border-radius:3px 3px 0 0;overflow:hidden;min-height:2px;background:var(--line)}
@@ -272,8 +272,8 @@ button.card[disabled]{opacity:.55;cursor:not-allowed}
 #jtext{width:100%;min-height:52vh;border:0;outline:0;resize:vertical;background:transparent;color:inherit;font:16px/1.75 Georgia,'Times New Roman',serif;padding:0}
 .jrec{display:block;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:8px 0;font:inherit;color:inherit;cursor:pointer}.jrec small{color:var(--mut)}
 @media(max-width:700px){.jgrid{grid-template-columns:minmax(0,1fr)}#jtext{min-height:40vh}}
-@media(max-width:700px){.g2,.g3,.grid2{grid-template-columns:minmax(0,1fr)}.kv{grid-template-columns:minmax(0,1fr)}.kv dt{margin-top:6px}.hbar{grid-template-columns:minmax(0,7em) minmax(0,1fr) 2.6em}.bar input[type=search]{min-width:0;width:100%}.bar select{max-width:100%;flex:1 1 140px}}
-@media(max-width:600px){.tbl{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid var(--line)}.stack td{display:flex;justify-content:space-between;gap:12px;border:0;padding:3px 4px;text-align:right}.stack td::before{content:attr(data-l);color:var(--mut);text-align:left}.stack td:empty{display:none}}
+@media(max-width:700px){.g2,.g3,.grid2{grid-template-columns:minmax(0,1fr)}.kv{grid-template-columns:minmax(0,1fr)}.kv dt{margin-top:6px}.hbar{grid-template-columns:minmax(0,10em) minmax(0,1fr) 2.6em}.bar input[type=search]{min-width:0;width:100%}.bar select{max-width:100%;flex:1 1 140px}}
+@media(max-width:600px){.tbl{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid var(--line)}.stack td{display:flex;justify-content:space-between;gap:12px;border:0;padding:3px 4px;text-align:right}.stack td::before{content:attr(data-l);color:var(--mut);text-align:left}.stack td:empty{display:none}.stack td>.cv{display:block;min-width:0;text-align:right}.stack td::before{flex:none;max-width:45%}}
 details.panel>summary{cursor:pointer;list-style-position:inside}.pwwrap{position:relative;display:block}.pwwrap input{padding-right:44px!important}.pweye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;background:transparent;color:var(--mut);cursor:pointer;display:grid;place-items:center;border-radius:6px;padding:0}.pweye:hover,.pweye:focus-visible{color:var(--ink);background:var(--line)}.pweye svg{width:20px;height:20px}
 
 .menubtn,.scrim{display:none}
@@ -394,7 +394,7 @@ const T=I18N.T;
 document.documentElement.lang=LANG==='ru'?'ru':'kk';
 if(document.body)I18N.start();else document.addEventListener('DOMContentLoaded',I18N.start);
 </script>
-<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;const h=c.closest('table').rows[0].cells[i];c.dataset.l=h?(typeof T==='function'?T(h.textContent):h.textContent):''}}).observe(document,{childList:true,subtree:true})</script>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;const h=c.closest('table').rows[0].cells[i];c.dataset.l=h?(typeof T==='function'?T(h.textContent):h.textContent):'';if(c.childNodes.length>1){const w=document.createElement('span');w.className='cv';while(c.firstChild)w.appendChild(c.firstChild);c.appendChild(w)}}}).observe(document,{childList:true,subtree:true})</script>
 </head>
 <body>
 <div id="root"><div class="boot"><div class="box"><b class="logo">RSLC</b><p class="mut">Жүйе жүктеліп жатыр…</p></div></div></div>
