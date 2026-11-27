@@ -1,5 +1,5 @@
 /* RSLC service worker: офлайн кезде бетті кэштен ашады. Онлайн болса — әрқашан жаңа нұсқа. */
-const C='rslc-v1';
+const C='rslc-v2';
 const CORE=['./','index.html','config.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','vendor/supabase.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(CORE)).catch(()=>{}));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
