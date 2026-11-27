@@ -187,8 +187,8 @@ td.jc{cursor:pointer}td.jc:hover{background:#EEF7F8}
 .mcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:16px}
 .mcard{background:#fff;border:1.5px solid #C6E4E9;border-radius:14px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:8px;text-align:left;font:inherit;color:inherit}
 .mcard:hover{border-color:#1E8C8C}
-.mcard .hd{display:flex;gap:10px;align-items:center}.mcard .hd .ring{width:52px;height:52px;flex:none}
-.mcard .hd b{display:block;font-size:15px;line-height:1.2}.mcard .hd small{color:var(--mut);font-size:12.5px}
+.mcard .mhd{display:flex;flex-wrap:nowrap;gap:10px;align-items:center;margin:0}.mcard .mhd>div{min-width:0}.mcard .mhd .ring,.mcard .mhd svg{width:52px;height:52px;flex:none}
+.mcard .mhd b{display:block;font-size:15px;line-height:1.2}.mcard .mhd small{color:var(--mut);font-size:12.5px}
 .mcard .mcr{display:grid;margin:0;padding:0;min-height:0;line-height:1.3;grid-template-columns:96px 1fr 38px;gap:6px;align-items:center;font-size:12px;color:var(--mut)}
 .mcard .mcr .mtr{height:6px;background:#E6F1F4;border-radius:3px;overflow:hidden}.mcard .mcr .mtr i{display:block;height:100%;background:#1E8C8C}
 .mcard .mcr .mtr i.lo{background:#E07A5F}.mcard .mcr span:last-child{text-align:right;color:var(--ink)}
@@ -723,7 +723,7 @@ const VIEWS={};
 function mCard(m){const k=kpi(m.id,'month');const pc=k.total;const stage=pc==null?'дән':pc>=85?'гүлдеді':pc>=60?'көшет':pc>=30?'өскін':'дән';
  const t0=today();const late=S.events.filter(e=>e.teacherId===m.id&&EV_ACT[e.type]&&e.status!=='Completed'&&e.status!=='Cancelled'&&e.date<t0&&e.date>=range('month')[0]).length;const at=attStats(m.id,range('month'));
  const ft=!k.plan?['#C2412D','Айлық жоспар қойылмаған']:late?['#B7791F',`${late} жұмыс мерзімі өтті`]:['#1D6B3F',`Жоспар қойылған${at.pct!=null?' · қатысу '+at.pct+'%':''}`];
- return `<button class="mcard" data-act="kpiOpen" data-id="${esc(m.id)}"><div class="hd">${sproutRing(pc)}<div><b>${esc(m.name)}</b><small>KPI ${pc==null?'—':Math.round(pc)+'%'} · ${esc(stage)}</small></div></div>
+ return `<button class="mcard" data-act="kpiOpen" data-id="${esc(m.id)}"><div class="mhd">${sproutRing(pc)}<div><b>${esc(m.name)}</b><small>KPI ${pc==null?'—':Math.round(pc)+'%'} · ${esc(stage)}</small></div></div>
  ${ACTS.map(a=>{const v=k.v[a.k];const e=k.exp[a.k];return `<div class="mcr"><span>${esc(a.sh)}</span><span class="mtr"><i class="${v!=null&&v<40?'lo':''}" style="width:${v??0}%"></i></span><span>${k.cnt[a.k]}${e>0?'/'+Math.round(e*10)/10:''}</span></div>`}).join('')}
  <div class="ft" style="color:${ft[0]}">${esc(ft[1])}</div></button>`}
 function schoolChips(){const t0=today();return S.schools.slice().map(sc=>{const ds=S.events.filter(e=>e.schoolId===sc.id&&e.status==='Completed'&&e.date<=t0).map(e=>e.date).sort();const last=ds[ds.length-1];const d=last?Math.round((new Date(t0)-new Date(last))/864e5):null;return {sc,d}}).sort((a,b)=>(b.d??1e9)-(a.d??1e9)).map(({sc,d})=>`<a class="schip ${d==null||d>14?'r':d>7?'y':'g'}" href="#school-${esc(sc.id)}">${esc(sc.name.replace(/[«»"]/g,''))} · ${d==null?'барылмаған':d===0?'бүгін':d+' күн'}</a>`).join('')}
