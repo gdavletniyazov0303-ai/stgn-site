@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0E4D4F">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" type="image/svg+xml" href="icons/logo.svg">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,9 +20,9 @@
    COLOUR deep green #00463c rail, white ground, lime-white #e6f5c8 for live work, coral #ff6f59 for trouble
    TYPE Inter Tight 700/800 display + Inter text
    LAYOUT green rail left with navigation, content right; under 900px the rail becomes a top bar with a scrolling nav */
-:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0c1311);--ink:light-dark(#0f1a17,#e6eee9);--mut:light-dark(#5a6a65,#93a59e);--line:light-dark(#e1e8e4,#22302b);--panel:light-dark(#f4f8f5,#131c19);--rail:light-dark(#0E4D4F,#0a3436);--lime:#e6f5c8;--coral:#ff6f59;--acc:light-dark(#00463c,#86dcb9);--accInk:light-dark(#ffffff,#06231d);--ok:light-dark(#0b7a4f,#5ad19a);--warnBg:light-dark(#fff1d6,#3a2c10);--warnInk:light-dark(#7a4b00,#ffd27a);--badBg:light-dark(#ffe3dd,#3d1a14);--badInk:light-dark(#a62a14,#ff9c8a);--revBg:light-dark(#e3ecff,#18233d);--revInk:light-dark(#1c3f8f,#a9c1ff)}
+:root{color-scheme:light;--bg:light-dark(#ffffff,#0c1311);--ink:light-dark(#0f1a17,#e6eee9);--mut:light-dark(#5a6a65,#93a59e);--line:light-dark(#e1e8e4,#22302b);--panel:light-dark(#f4f8f5,#131c19);--rail:light-dark(#0E4D4F,#0a3436);--lime:#e6f5c8;--coral:#ff6f59;--acc:light-dark(#00463c,#86dcb9);--accInk:light-dark(#ffffff,#06231d);--ok:light-dark(#0b7a4f,#5ad19a);--warnBg:light-dark(#fff1d6,#3a2c10);--warnInk:light-dark(#7a4b00,#ffd27a);--badBg:light-dark(#ffe3dd,#3d1a14);--badInk:light-dark(#a62a14,#ff9c8a);--revBg:light-dark(#e3ecff,#18233d);--revInk:light-dark(#1c3f8f,#a9c1ff)}
 :root[data-theme=light]{color-scheme:light}
-:root[data-theme=dark]{color-scheme:dark}
+:root[data-theme=dark]{color-scheme:light}
 *{box-sizing:border-box;min-width:0}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif;overflow-x:clip}
@@ -309,6 +309,25 @@ body.navlock{overflow:hidden}
  .month .wh{min-height:0;font-weight:700;text-align:center}
 }
 .chip{flex:none}@media(max-width:900px){.top .chip.pend{display:inline-block}}.card .chip{align-self:flex-start}
+
+/* ===== Тақырып 2: ақ-көгілдір (инфографика) ===== */
+:root{--bg:#ffffff;--page:#F4F9FB;--ink:#12324A;--mut:#5B7380;--line:#D3E7EC;--panel:#EEF7F8;--rail:#ffffff;--acc:#1E8C8C;--accInk:#ffffff;--ok:#0b7a4f;--sun:#B7791F}
+body{background:var(--page)}
+.panel{border:1.5px solid #C6E4E9;border-radius:14px}
+.card{border-color:#CFE6EB}
+.kcol{background:#E9F5F7}
+.rail{color:var(--ink);border-right:1px solid #E1EEF2}
+.brand b{color:#0F6B6B}.brand span{color:var(--mut)}
+.me{background:#EAF6F6;color:var(--ink)}.me:hover{background:#DDF0F0}.me small{color:var(--mut)}
+.today{color:var(--sun)}
+.val{border-top-color:#E1EEF2;color:var(--mut)}.val b{color:var(--sun)}
+.who{border-top-color:#E1EEF2;color:var(--mut)}
+.nav a{color:var(--ink);opacity:1}
+.nav a .ic{color:#1E8C8C;opacity:1}
+.nav a:hover{background:#F0F8F9}
+.nav a.on{background:#E3F4F4;color:#0F6B6B;box-shadow:inset 3px 0 0 #1E8C8C}
+.nav a.on .ic{color:#0F6B6B}
+.top{background:#ffffff}
 </style>
 <script src="config.js"></script>
 <script>
@@ -608,12 +627,12 @@ const navLabel=l=>l.split('|')[0];
 const VALUES=[['Сенім (ниет)','Ізгі ниет мағына мен күш береді.'],['Ақиқат','Білім азат етеді және алға жетелейді.'],['Дұрыс әрекет','Күн сайын кішкене қадам — үлкен нәтиже береді.'],['Сабыр','Қиындықты еңсере отырып, берік нәтижеге жетеміз.']];
 function sproutRing(pc){const p=pc==null?0:Math.max(0,Math.min(100,pc));const C=2*Math.PI*18;const st=p>=85?3:p>=60?2:p>=30?1:0;
  const plant=['<ellipse cx="23" cy="27" rx="3.2" ry="2.4" fill="#C9A26B"/>','<path d="M23 29v-7" stroke="#9BD37A" stroke-width="1.8" stroke-linecap="round"/><path d="M23 24c-3 0-4.5-2-4.5-4.5 3 0 4.5 2 4.5 4.5z" fill="#9BD37A"/>','<path d="M23 30V18" stroke="#9BD37A" stroke-width="1.8" stroke-linecap="round"/><path d="M23 22c-3.5 0-5-2.2-5-5 3.5 0 5 2.2 5 5z" fill="#9BD37A"/><path d="M23 20c0-3 1.8-5 5-5 0 3-1.8 5-5 5z" fill="#CDEB9F"/>','<path d="M23 31V18" stroke="#9BD37A" stroke-width="1.8" stroke-linecap="round"/><path d="M23 24c-3.5 0-5-2.2-5-5 3.5 0 5 2.2 5 5z" fill="#9BD37A"/><path d="M23 21c0-3 1.8-5 5-5 0 3-1.8 5-5 5z" fill="#CDEB9F"/><circle cx="23" cy="15" r="3" fill="#F5C451"/>'][st];
- return `<svg class="ring" viewBox="0 0 46 46" aria-hidden="true"><circle cx="23" cy="23" r="18" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="4.5"/><circle cx="23" cy="23" r="18" fill="none" stroke="#9BD37A" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="${(C*p/100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 23 23)"/>${plant}</svg>`}
+ return `<svg class="ring" viewBox="0 0 46 46" aria-hidden="true"><circle cx="23" cy="23" r="18" fill="none" stroke="#D6ECEC" stroke-width="4.5"/><circle cx="23" cy="23" r="18" fill="none" stroke="#1E8C8C" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="${(C*p/100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 23 23)"/>${plant}</svg>`}
 function railTop(){const me=S.me;if(!me)return '';const isT=TEACHER_ROLES.includes(me.role);let k=null;try{k=isT?kpi(myId(),'month'):null}catch(e){}
  const pc=k?.total;const stage=pc==null?'':pc>=85?'гүлдеді':pc>=60?'көшет болды':pc>=30?'өсіп келеді':'дән себілді';
  const t0=today();const vis=S.events.filter(e=>e.teacherId===myId()&&e.date===t0&&e.type===VISIT&&e.status!=='Cancelled');const dw=new Date().getDay();
  const where=vis.length?'Бүгін: '+uniq(vis.map(e=>sn(e.schoolId))).join(', '):(me.homeSchoolId&&dw>0&&dw<6?'Бүгін: '+sn(me.homeSchoolId):'');
- return `<a class="me" href="#${isT?'dashboard':'profile'}"${isT?' data-act="kpiMine"':''}>${isT?sproutRing(pc):`<span class="ring" style="display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.12);font-weight:700">${esc(ini(me.name))}</span>`}<span><b>${esc(me.name)}</b><small>${isT?`KPI ${pc==null?'—':Math.round(pc)+'%'} · ${esc(stage)}`:esc(ROLES[me.role]||'')}</small></span></a>${where?`<div class="today"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><span>${esc(where)}</span></div>`:''}`}
+ return `<a class="me" href="#${isT?'dashboard':'profile'}"${isT?' data-act="kpiMine"':''}>${isT?sproutRing(pc):`<span class="ring" style="display:grid;place-items:center;border-radius:50%;background:#D6ECEC;color:#0F6B6B;font-weight:700">${esc(ini(me.name))}</span>`}<span><b>${esc(me.name)}</b><small>${isT?`KPI ${pc==null?'—':Math.round(pc)+'%'} · ${esc(stage)}`:esc(ROLES[me.role]||'')}</small></span></a>${where?`<div class="today"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><span>${esc(where)}</span></div>`:''}`}
 function railVal(){const d=Math.floor(Date.now()/864e5);const [h,t]=VALUES[d%VALUES.length];return `<div class="val"><b>Бүгінгі құндылық · ${esc(h)}</b>${esc(t)}</div>`}
 /* ---------- navigation ---------- */
 function navItems(){
@@ -658,12 +677,12 @@ function doRender(){
  const cur=items.find(i=>i[0]===base)||items.find(i=>v.startsWith(i[0]));
  root.innerHTML=`<div class="app${S.navOpen?' navopen':''}"><div class="scrim" data-act="navClose" aria-hidden="true"></div><aside class="rail" id="rail"><div class="brand">${LOGO_SVG}<span><b>RSLC</b><span>Мәнді түсінуге жол</span></span></div>${railTop()}
  <nav class="nav" aria-label="Негізгі мәзір">${items.map(([h,l])=>`<a href="#${h}" class="${v===h||base===h||(base==='project'&&h==='projects')||(base==='school'&&h==='schools'&&R()!=='coordinator')||(base==='member'&&h==='team')||(base==='trainee'&&h==='trainees')||(base==='reports'&&h==='analytics')?'on':''}">${navIc(h)}<span class="tx">${esc(navLabel(l))}</span>${navBadge[h]?`<span class="n">${navBadge[h]}</span>`:''}</a>`).join('')}</nav>
- <div class="railfoot">${railVal()}<div class="who"><span style="opacity:.75">${esc(ROLES[S.me.role]||'')}${S.me.homeSchoolId?' · '+esc(sn(S.me.homeSchoolId)):''}</span>${S.local||S.supa?'<br><a href="#" data-act="logout" style="color:var(--lime)">Шығу</a>':''}</div></div></aside>
+ <div class="railfoot">${railVal()}<div class="who"><span style="opacity:.75">${esc(ROLES[S.me.role]||'')}${S.me.homeSchoolId?' · '+esc(sn(S.me.homeSchoolId)):''}</span>${S.local||S.supa?'<br><a href="#" data-act="logout" style="color:var(--acc)">Шығу</a>':''}</div></div></aside>
  <main><div class="top"><button type="button" class="menubtn" data-act="navToggle" aria-label="Мәзір" aria-controls="rail" aria-expanded="${S.navOpen?'true':'false'}"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span class="crumb">${esc(cur?cur[1].split('|')[0]:'')}</span><span class="sp"></span>${langSw()}${(S.pending||0)>0?`<span class="chip warn pend" title="Интернет қосылғанда автоматты жіберіледі">Кезекте: ${S.pending}</span>`:S.offline?'<span class="chip warn">Желі жоқ — деректер жаңартылмауы мүмкін</span>':''}<a class="btn ghost sm notif" href="#notifications" aria-label="Хабарламалар"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="lbl">Хабарламалар</span>${unread()?`<span class="cnt">${unread()}</span>`:''}</a>${S.local||S.supa?'<button class="btn ghost sm hide-m" data-act="logout">Шығу</button>':''}</div><section class="view" id="view">${body}</section></main></div>`;
  if(aid){const el=document.getElementById(aid);if(el){el.focus();try{if(ss!=null&&el.setSelectionRange)el.setSelectionRange(ss,ss)}catch(e){}}}
 }
 function stageHtml(){
- const box=c=>`<div class="boot"><div class="box"><div style="display:flex;justify-content:flex-end;width:100%">${langSw()}</div><b class="logo">RSLC</b>${c}</div></div>`;
+ const box=c=>`<div class="boot"><div class="box"><div style="display:flex;justify-content:flex-end;width:100%">${langSw()}</div><div style="display:flex;align-items:center;gap:12px;justify-content:center"><span style="width:52px;height:52px;display:block">${LOGO_SVG.replace('class="lg"','style="width:52px;height:52px"')}</span><span style="text-align:left"><b class="logo" style="display:block;line-height:1">RSLC</b><span class="small mut">Мәнді түсінуге жол</span></span></div>${c}</div></div>`;
  if(S.stage==='boot')return box('<p class="mut">Жүйе жүктеліп жатыр…</p>');
  if(S.stage==='msg')return box(`<p>${esc(S.msg)}</p>${S.local||S.supa?'<button class="btn ghost" data-act="logout">Шығу</button>':''}`);
  if(S.stage==='slogin')return box(supaLoginHtml());
