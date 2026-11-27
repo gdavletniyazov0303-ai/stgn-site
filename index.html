@@ -513,7 +513,7 @@ const visObs=()=>isMgr()?S.observations:S.observations.filter(o=>o.ownerId===myI
 const obsAvg=o=>{const v=OBS_CRIT.map(([k])=>+(o.scores||{})[k]).filter(x=>x>=1&&x<=5);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null};
 const f1=x=>x==null?'—':(Math.round(x*10)/10).toFixed(1).replace('.',',');
 const trObs=id=>visObs().filter(o=>o.traineeId===id).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
-const trSchools=()=>canManage()||isMgr()?S.schools:S.schools.filter(s=>s.id===mySchool()||visitsOf(M(myId())).some(v=>v.schoolId===s.id));
+const trSchools=()=>S.schools;
 const canEditTr=t=>!!t&&(t.ownerId===myId()||canManage());
 const avgChip=x=>x==null?'<span class="chip">баға жоқ</span>':`<span class="chip ${x>=4?'ok':x<3?'bad':'warn'}">орташа ${f1(x)}</span>`;
 const LANGS=[['kz','Толық қазақ тілінде'],['mixed','Аралас (қазақ/орыс)'],['ru','Толық орыс тілінде']];
@@ -1734,7 +1734,7 @@ function ownerOpts(subj){
 function wireOwnerSort(){setTimeout(()=>{const s=document.querySelector('#msheet [name=subject]'),o=document.querySelector('#msheet [name=ownerId]');if(!s||!o)return;const re=()=>{const cur=o.value;o.innerHTML=ownerOpts(s.value).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join('');o.value=cur};s.addEventListener('input',re);s.addEventListener('change',re)},30)}
 async function trForm(t={},preset={}){
  const ss=trSchools();
- if(!ss.length){toast(canManage()?'Алдымен «Мектептер желісіне» мектеп қосыңыз':'Сізді әлі ешбір мектепке бекітпеген. Басшылыққа хабарласыңыз.',1);return}
+ if(!ss.length){toast(canManage()?'Алдымен «Мектептер желісіне» мектеп қосыңыз':'Мектептер желісі әлі бос. Басшылыққа хабарласыңыз.',1);return}
  const fields=[{k:'name',l:'Аты-жөні',req:1,full:1},{k:'schoolId',l:'Мектебі',t:'select',req:1,o:opt(ss.slice().sort(by('name')).map(s=>[s.id,s.name]),'— таңдаңыз')},{k:'subject',l:'Пәні'},{k:'experience',l:'Педагогикалық өтілі, жыл',t:'number',min:0},{k:'category',l:'Санаты',t:'select',o:opt(TR_CAT,'—')},{k:'grades',l:'Сабақ беретін сыныптары (мыс. 5–9)'},{k:'phone',l:'Телефон'},{k:'note',l:'Ескерту',t:'textarea',rows:2,full:1}];
  if(canManage())fields.push({k:'ownerId',l:'Жауапты методист (пәні сәйкес келетіндер — тізімнің басында, ★ белгісімен)',t:'select',req:1,o:ownerOpts(t.subject||preset.subject||''),full:1});
  const fp=form(t.id?'Мұғалім карточкасын өңдеу':'Оқытылатын мұғалімді қосу',fields,{ownerId:canManage()?'':myId(),...preset,...t});if(canManage())wireOwnerSort();const v=await fp;if(!v)return;
